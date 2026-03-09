@@ -156,21 +156,58 @@
         const DAC_THRESHOLD = 2800; 
         const CO2_PER_KWH = 0.45; 
 
+        // New Constants derived from CSV Logic
+        const PRICE_B_BASIC = 1.11;
+        const PRICE_B_INTERMEDIATE = 1.35;
+        const PRICE_B_SURPLUS = 3.93;
+        const LIMIT_BASIC = 150;
+        const LIMIT_INTERMEDIATE = 130;
+        const FACTOR_BILL_TO_ENERGY = 1.26; // 1 + 0.16 IVA + 0.10 DAP
+        const PANEL_WATTAGE = 625;
+        const EFFECTIVE_SUN_HOURS = 3.71; // Calibrated factor
+
         // --- CALCULATOR LOGIC ---
         const calculateScenario = (inputs) => {
-          const { monthlyBill, inflationRate } = inputs;
+          const { monthlyBill } = inputs; // Now treated as Bimonthly Bill
+          const inflationRate = 8; // Fixed at 8%
           const inflationDec = inflationRate / 100;
           const startYear = 2026;
 
-          // 1. Estimate Consumption (kWh)
-          const isDac = monthlyBill > DAC_THRESHOLD;
-          const pricePerKwh = isDac ? PRICE_PER_KWH_DAC : PRICE_PER_KWH_SUBSIDIZED;
-          const estimatedConsumption = inputs.monthlyConsumption || (monthlyBill / pricePerKwh);
+          // 1. Estimate Consumption (kWh) from Bimonthly Bill
+          // Reverse calculation based on tiered pricing
+          const energyCost = monthlyBill / FACTOR_BILL_TO_ENERGY;
+          let estimatedConsumption = 0;
+          let remainingCost = energyCost;
+
+          // Tier 1: Basic
+          const costBasic = LIMIT_BASIC * PRICE_B_BASIC;
+          if (remainingCost <= costBasic) {
+             estimatedConsumption = remainingCost / PRICE_B_BASIC;
+             remainingCost = 0;
+          } else {
+             estimatedConsumption += LIMIT_BASIC;
+             remainingCost -= costBasic;
+             
+             // Tier 2: Intermediate
+             const costIntermediate = LIMIT_INTERMEDIATE * PRICE_B_INTERMEDIATE;
+             if (remainingCost <= costIntermediate) {
+                estimatedConsumption += remainingCost / PRICE_B_INTERMEDIATE;
+                remainingCost = 0;
+             } else {
+                estimatedConsumption += LIMIT_INTERMEDIATE;
+                remainingCost -= costIntermediate;
+
+                // Tier 3: Surplus
+                estimatedConsumption += remainingCost / PRICE_B_SURPLUS;
+             }
+          }
 
           // 2. Sizing the System
-          const dailyKwh = estimatedConsumption / 30;
-          const reqKwSystem = (dailyKwh / AVG_SUN_HOURS) * 1.1; 
-          const systemSizeKw = Math.ceil(reqKwSystem * 10) / 10; 
+          // Consumption is Bimonthly, so Daily = Consumption / 60
+          const dailyKwh = estimatedConsumption / 60;
+          // Using calibrated effective sun hours to match 13 panels for 1809 kWh ($8000 bill)
+          const reqKwSystem = dailyKwh / EFFECTIVE_SUN_HOURS; 
+          const systemSizeKw = Math.ceil(reqKwSystem * 100) / 100; // Round to 2 decimals
 
           // 3. Investment Costs
           const solarInvestment = systemSizeKw * PANEL_COST_PER_KW;
@@ -180,15 +217,16 @@
           let cfeAccum = 0;
           let solarAccum = solarInvestment;
 
-          let currentMonthlyBillCFE = monthlyBill;
-          const solarMonthlyMaintenance = CFE_MIN_CHARGE; 
+          // Annualize the bimonthly bill for projections
+          let currentAnnualBillCFE = monthlyBill * 6; 
+          const solarAnnualMaintenance = CFE_MIN_CHARGE * 12; 
 
           for (let i = 0; i <= 20; i++) {
             const currentYear = startYear + i;
             
             // Annual costs
-            const annualCfe = currentMonthlyBillCFE * 12;
-            const annualSolar = solarMonthlyMaintenance * 12;
+            const annualCfe = currentAnnualBillCFE;
+            const annualSolar = solarAnnualMaintenance;
 
             if (i > 0) {
               cfeAccum += annualCfe;
@@ -204,7 +242,7 @@
             });
 
             // Inflate CFE bill for next year
-            currentMonthlyBillCFE = currentMonthlyBillCFE * (1 + inflationDec);
+            currentAnnualBillCFE = currentAnnualBillCFE * (1 + inflationDec);
           }
 
           // 5. Calculate Metrics
@@ -212,10 +250,14 @@
 
           // Solar Metrics
           const solar20YearTotal = projections[20].solarAccumulated;
-          const solarSavingsMonthly = monthlyBill - solarMonthlyMaintenance;
-          const solarRoi = solarSavingsMonthly > 0 ? (solarInvestment / (solarSavingsMonthly * 12)) : 0;
+          // Monthly Savings (approximate from bimonthly)
+          const bimonthlySavings = monthlyBill - (CFE_MIN_CHARGE * 2);
+          const annualSavings = bimonthlySavings * 6;
+          const monthlySavings = annualSavings / 12;
+
+          const solarRoi = annualSavings > 0 ? (solarInvestment / annualSavings) : 0;
           
-          const co2Annual = estimatedConsumption * 12 * CO2_PER_KWH;
+          const co2Annual = estimatedConsumption * 6 * CO2_PER_KWH; // Bimonthly * 6 = Annual
 
           const baseResult = {
             monthlySavings: 0,
@@ -238,7 +280,7 @@
             },
             solar: {
               ...baseResult,
-              monthlySavings: Math.round(solarSavingsMonthly),
+              monthlySavings: Math.round(monthlySavings),
               roiYears: parseFloat(solarRoi.toFixed(1)),
               co2Saved: Math.round(co2Annual),
               independence: 'Media', 
@@ -556,7 +598,7 @@
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Recibo CFE (Mensual Promedio)</label>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Recibo CFE (Bimestral)</label>
                           <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">$</span>
                             <input 
@@ -568,7 +610,7 @@
                               onChange={(e) => handleInputChange('monthlyBill', Number(e.target.value))}
                             />
                           </div>
-                          <p className="text-xs text-slate-500 mt-2 ml-1">Si pagas bimestral, divide entre 2.</p>
+                          <p className="text-xs text-slate-500 mt-2 ml-1">Ingresa el monto total de tu último recibo.</p>
                         </div>
 
                         <div>
@@ -592,18 +634,12 @@
                         <div className="pt-5 border-t border-slate-200/50">
                           <div className="flex justify-between items-center mb-3">
                             <label className="text-sm font-medium text-slate-700">Inflación Energética Anual</label>
-                            <span className="text-xs font-bold text-emerald-700 bg-emerald-100/50 border border-emerald-200 px-2 py-0.5 rounded-md">{inputs.inflationRate}%</span>
+                            <span className="text-xs font-bold text-emerald-700 bg-emerald-100/50 border border-emerald-200 px-2 py-0.5 rounded-md">8% (Fijo)</span>
                           </div>
-                          <input 
-                            type="range" 
-                            min="1" 
-                            max="10" 
-                            step="0.5"
-                            value={inputs.inflationRate}
-                            onChange={(e) => handleInputChange('inflationRate', Number(e.target.value))}
-                            className="w-full h-1.5 bg-slate-200/50 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                          />
-                          <p className="text-xs text-slate-500 mt-2">Tendencia 2026: 5% - 8%</p>
+                          <div className="w-full h-1.5 bg-slate-200/50 rounded-lg relative">
+                             <div className="absolute left-0 top-0 h-full bg-emerald-400 rounded-lg" style={{width: '80%'}}></div>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-2">Proyección ajustada a tendencia histórica.</p>
                         </div>
                       </div>
                     </div>
