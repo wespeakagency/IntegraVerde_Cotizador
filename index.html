@@ -168,44 +168,73 @@
 
         // --- CALCULATOR LOGIC ---
         const calculateScenario = (inputs) => {
-          const { monthlyBill } = inputs; // Now treated as Bimonthly Bill
+          const { monthlyBill, propertyType } = inputs; // Now treated as Bimonthly Bill
           const inflationRate = 8; // Fixed at 8%
           const inflationDec = inflationRate / 100;
           const startYear = 2026;
 
           // 1. Estimate Consumption (kWh) from Bimonthly Bill
-          // Reverse calculation based on tiered pricing
           const energyCost = monthlyBill / FACTOR_BILL_TO_ENERGY;
           let estimatedConsumption = 0;
           let remainingCost = energyCost;
 
-          // Tier 1: Basic
-          const costBasic = LIMIT_BASIC * PRICE_B_BASIC;
-          if (remainingCost <= costBasic) {
-             estimatedConsumption = remainingCost / PRICE_B_BASIC;
-             remainingCost = 0;
-          } else {
-             estimatedConsumption += LIMIT_BASIC;
-             remainingCost -= costBasic;
-             
-             // Tier 2: Intermediate
-             const costIntermediate = LIMIT_INTERMEDIATE * PRICE_B_INTERMEDIATE;
-             if (remainingCost <= costIntermediate) {
-                estimatedConsumption += remainingCost / PRICE_B_INTERMEDIATE;
+          if (propertyType === PropertyType.HOUSE) {
+             // Residential (Tarifa 1) - Reverse calculation based on tiered pricing
+             // Tier 1: Basic
+             const costBasic = LIMIT_BASIC * PRICE_B_BASIC;
+             if (remainingCost <= costBasic) {
+                estimatedConsumption = remainingCost / PRICE_B_BASIC;
                 remainingCost = 0;
              } else {
-                estimatedConsumption += LIMIT_INTERMEDIATE;
-                remainingCost -= costIntermediate;
+                estimatedConsumption += LIMIT_BASIC;
+                remainingCost -= costBasic;
+                
+                // Tier 2: Intermediate
+                const costIntermediate = LIMIT_INTERMEDIATE * PRICE_B_INTERMEDIATE;
+                if (remainingCost <= costIntermediate) {
+                   estimatedConsumption += remainingCost / PRICE_B_INTERMEDIATE;
+                   remainingCost = 0;
+                } else {
+                   estimatedConsumption += LIMIT_INTERMEDIATE;
+                   remainingCost -= costIntermediate;
 
-                // Tier 3: Surplus
-                estimatedConsumption += remainingCost / PRICE_B_SURPLUS;
+                   // Tier 3: Surplus
+                   estimatedConsumption += remainingCost / PRICE_B_SURPLUS;
+                }
              }
+          } else {
+             // Business (Tarifa PDBT - Pequeña Demanda Baja Tensión)
+             // Based on the provided image:
+             // Total Bill = $4000
+             // Fixed Charge = $94.00
+             // DAP = $308.06 (approx 7.7% of total, but we'll use a reverse calculation)
+             // Energy Subtotal = $3080.60
+             // IVA 16% = $492.90
+             // Price per kWh = $4.03
+             // Total Consumption = 764 kWh
+             
+             // Reverse calculation:
+             // Let E = Energy Subtotal
+             // Let F = Fixed Charge ($94.00)
+             // Let D = DAP
+             // Total = E + F + IVA(E+F) + D
+             // Total = (E + 94) * 1.16 + D
+             // From image: D = 308.06, Total = 4000. 
+             // (3080.60 + 94) * 1.16 = 3174.60 * 1.16 = 3682.536
+             // 3682.536 + 308.06 = 3990.596 (approx 4000)
+             
+             // To simplify and match the exact consumption of 764 kWh for $4000:
+             // We'll calculate the effective rate including all taxes and fees
+             // Effective Rate = Total Bill / Consumption = 4000 / 764 = 5.2356
+             
+             const EFFECTIVE_PDBT_RATE = 5.2356; 
+             estimatedConsumption = monthlyBill / EFFECTIVE_PDBT_RATE;
           }
 
           // 2. Sizing the System
           // Consumption is Bimonthly, so Daily = Consumption / 60
           const dailyKwh = estimatedConsumption / 60;
-          // Using calibrated effective sun hours to match 13 panels for 1809 kWh ($8000 bill)
+          // Using calibrated effective sun hours
           const reqKwSystem = dailyKwh / EFFECTIVE_SUN_HOURS; 
           const systemSizeKw = Math.ceil(reqKwSystem * 100) / 100; // Round to 2 decimals
 
