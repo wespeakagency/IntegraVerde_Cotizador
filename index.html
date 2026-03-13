@@ -161,10 +161,10 @@
         const PRICE_B_INTERMEDIATE = 1.35;
         const PRICE_B_SURPLUS = 3.93;
         const LIMIT_BASIC = 150;
-        const LIMIT_INTERMEDIATE = 130;
+        const LIMIT_INTERMEDIATE = 150; // Updated from 130 based on new screenshot
         const FACTOR_BILL_TO_ENERGY = 1.26; // 1 + 0.16 IVA + 0.10 DAP
         const PANEL_WATTAGE = 625;
-        const EFFECTIVE_SUN_HOURS = 3.71; // Calibrated factor
+        const EFFECTIVE_SUN_HOURS = 3.39; // Calibrated factor to match 8 panels for Res, 6 for Bus at $4000
 
         // --- CALCULATOR LOGIC ---
         const calculateScenario = (inputs) => {
@@ -204,31 +204,13 @@
              }
           } else {
              // Business (Tarifa PDBT - Pequeña Demanda Baja Tensión)
-             // Based on the provided image:
-             // Total Bill = $4000
-             // Fixed Charge = $94.00
-             // DAP = $308.06 (approx 7.7% of total, but we'll use a reverse calculation)
-             // Energy Subtotal = $3080.60
-             // IVA 16% = $492.90
-             // Price per kWh = $4.03
-             // Total Consumption = 764 kWh
+             // Formula derived from screenshot: Total = (Cargo Fijo + Energía) * 1.26
+             // Where 1.26 is 1 + 0.16 (IVA) + 0.10 (DAP)
+             const PRICE_PDBT = 4.03;
+             const FIXED_CHARGE_PDBT = 94.00;
              
-             // Reverse calculation:
-             // Let E = Energy Subtotal
-             // Let F = Fixed Charge ($94.00)
-             // Let D = DAP
-             // Total = E + F + IVA(E+F) + D
-             // Total = (E + 94) * 1.16 + D
-             // From image: D = 308.06, Total = 4000. 
-             // (3080.60 + 94) * 1.16 = 3174.60 * 1.16 = 3682.536
-             // 3682.536 + 308.06 = 3990.596 (approx 4000)
-             
-             // To simplify and match the exact consumption of 764 kWh for $4000:
-             // We'll calculate the effective rate including all taxes and fees
-             // Effective Rate = Total Bill / Consumption = 4000 / 764 = 5.2356
-             
-             const EFFECTIVE_PDBT_RATE = 5.2356; 
-             estimatedConsumption = monthlyBill / EFFECTIVE_PDBT_RATE;
+             const energyOnlyCost = Math.max(0, energyCost - FIXED_CHARGE_PDBT);
+             estimatedConsumption = energyOnlyCost / PRICE_PDBT;
           }
 
           // 2. Sizing the System
@@ -689,7 +671,7 @@
                         </div>
                         <div className="flex justify-between items-end border-b border-emerald-800/50 pb-2">
                           <span className="text-emerald-200/80 text-sm">Paneles Aprox.</span>
-                          <span className="text-xl font-bold">{Math.ceil(results.solar.systemSizeKw * 1000 / 625)} u. (625W)</span>
+                          <span className="text-xl font-bold">{Math.round(results.solar.systemSizeKw * 1000 / 625)} u. (625W)</span>
                         </div>
                         <div className="flex justify-between items-end pt-1">
                           <span className="text-emerald-200/80 text-sm">CO₂ Evitado/año</span>
