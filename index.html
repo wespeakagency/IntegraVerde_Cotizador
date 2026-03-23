@@ -825,7 +825,10 @@
           );
         };
 
-        const PromoSection = () => (
+        const PromoSection = () => {
+          const [showTerms, setShowTerms] = useState(false);
+
+          return (
           <section id="promo-mundial" className="py-20 relative overflow-hidden bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-900 text-white">
              {/* Background Pattern */}
              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]"></div>
@@ -843,11 +846,16 @@
                          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-red-500">con tu Energía</span>
                       </h2>
                       <p className="text-lg text-slate-300 mb-8 leading-relaxed max-w-xl">
-                         Durante <strong>abril y mayo</strong>, al adquirir tu sistema de paneles solares, te regalamos la <strong>playera oficial de la selección</strong>. ¡Apoya a México con energía limpia!
+                         Durante <strong>abril y mayo</strong>, al adquirir tu sistema de paneles solares, te regalamos la <strong>playera de aficionado de la selección</strong>. ¡Apoya a México con energía limpia!
                       </p>
-                      <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-white text-emerald-900 hover:bg-emerald-50 font-bold py-4 px-8 rounded-full transition shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] transform hover:-translate-y-1">
-                         Quiero mi Promo
-                      </button>
+                      <div className="flex flex-col items-center md:items-start gap-4">
+                        <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="bg-white text-emerald-900 hover:bg-emerald-50 font-bold py-4 px-8 rounded-full transition shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] transform hover:-translate-y-1">
+                           Quiero mi Promo
+                        </button>
+                        <button onClick={() => setShowTerms(true)} className="text-xs text-emerald-300/70 hover:text-emerald-300 underline underline-offset-2 transition">
+                          Ver Términos y Condiciones
+                        </button>
+                      </div>
                    </div>
                    <div className="flex-1 relative">
                       <div className="relative z-10 bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-3xl transform rotate-3 hover:rotate-0 transition duration-500">
@@ -863,7 +871,7 @@
                          />
                          <div className="flex justify-between items-center">
                             <div>
-                               <h4 className="font-bold text-xl">Jersey Oficial</h4>
+                               <h4 className="font-bold text-xl">Jersey de Aficionado</h4>
                                <p className="text-sm text-emerald-200">Edición Local o Visitante</p>
                             </div>
                             <IconJersey className="w-10 h-10 text-emerald-400" />
@@ -874,8 +882,69 @@
                    </div>
                 </div>
              </div>
+
+             {/* Terms Modal */}
+             {showTerms && (
+               <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+                 <div className="bg-white text-slate-800 rounded-3xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-fade-in-up">
+                   <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                     <h3 className="text-xl font-bold text-slate-900">Términos y Condiciones</h3>
+                     <button onClick={() => setShowTerms(false)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-full transition">
+                       <IconX className="w-6 h-6" />
+                     </button>
+                   </div>
+                   <div className="p-6 overflow-y-auto text-sm text-slate-600 space-y-4 text-left">
+                     <p className="font-bold text-slate-800 text-base">Promoción: “Ponte la Verde con tu Energía”</p>
+                     <p>La promoción “Ponte la Verde con tu Energía” tiene como objetivo incentivar la adopción de energía solar mediante un beneficio promocional para los clientes que contraten un sistema de paneles solares durante el periodo de vigencia establecido.</p>
+                     
+                     <h4 className="font-bold text-slate-800 mt-6">1. Vigencia de la promoción</h4>
+                     <p>La promoción será válida del <strong>1 de abril al 31 de mayo de 2026</strong>, o hasta agotar existencias de los artículos promocionales, lo que ocurra primero.</p>
+                     
+                     <h4 className="font-bold text-slate-800 mt-6">2. Beneficio de la promoción</h4>
+                     <p>Durante el periodo de vigencia, los clientes que <strong>adquieran y contraten un sistema de paneles solares</strong> recibirán <strong>una playera oficial de aficionado de la selección mexicana de fútbol</strong> sin costo adicional.</p>
+                     <p>La entrega de la playera estará sujeta a disponibilidad de tallas y existencias.</p>
+                     
+                     <h4 className="font-bold text-slate-800 mt-6">3. Requisitos para participar</h4>
+                     <p>Para ser acreedor al beneficio, el cliente deberá:</p>
+                     <ul className="list-disc pl-5 space-y-2">
+                       <li>Realizar la <strong>contratación formal de un sistema de paneles solares</strong> dentro del periodo de vigencia de la promoción.</li>
+                       <li>Completar el proceso de <strong>firma de contrato y pago inicial</strong>, según las políticas comerciales de la empresa.</li>
+                     </ul>
+
+                     <h4 className="font-bold text-slate-800 mt-6">4. Entrega del incentivo</h4>
+                     <p>La playera promocional se entregará:</p>
+                     <ul className="list-disc pl-5 space-y-2">
+                       <li>Al momento de la <strong>firma del contrato</strong>, o</li>
+                       <li>Durante la <strong>instalación del sistema</strong>, según disponibilidad logística.</li>
+                     </ul>
+                     <p>La empresa se reserva el derecho de definir el momento y forma de entrega.</p>
+
+                     <h4 className="font-bold text-slate-800 mt-6">5. Restricciones</h4>
+                     <ul className="list-disc pl-5 space-y-2">
+                       <li>Promoción <strong>limitada a una playera por contrato</strong> de sistema solar adquirido.</li>
+                       <li>No aplica para <strong>cotizaciones realizadas fuera del periodo de vigencia</strong>.</li>
+                       <li>La playera promocional <strong>no es canjeable por dinero ni por otros productos o beneficios</strong>.</li>
+                       <li>No acumulable con otras promociones, descuentos o beneficios vigentes.</li>
+                       <li>La empresa se reserva el derecho de <strong>sustituir el artículo promocional por otro de valor equivalente</strong> en caso de falta de inventario.</li>
+                     </ul>
+
+                     <h4 className="font-bold text-slate-800 mt-6">6. Modificaciones</h4>
+                     <p>La empresa organizadora se reserva el derecho de <strong>modificar, suspender o cancelar la promoción</strong> en cualquier momento por causas justificadas, notificándolo a través de sus canales oficiales.</p>
+
+                     <h4 className="font-bold text-slate-800 mt-6">7. Aceptación de los términos</h4>
+                     <p>La participación en esta promoción implica la <strong>aceptación total de los presentes términos y condiciones</strong>.</p>
+                   </div>
+                   <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
+                     <button onClick={() => setShowTerms(false)} className="px-6 py-2 bg-slate-900 text-white rounded-xl font-medium hover:bg-slate-800 transition">
+                       Entendido
+                     </button>
+                   </div>
+                 </div>
+               </div>
+             )}
           </section>
-        );
+          );
+        };
 
         const PromoFloatingButton = () => {
           const [isVisible, setIsVisible] = useState(false);
