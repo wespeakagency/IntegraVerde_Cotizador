@@ -437,7 +437,7 @@
           const handleSubmit = (e) => {
              e.preventDefault();
              // Simulation of submission
-             console.log("Form data to send to info@integraverde.com:", formState);
+             console.log("Form data to send to contacto@integraverde.com:", formState);
              setTimeout(() => {
                 setSubmitted(true);
              }, 800);
@@ -538,7 +538,7 @@
                     <button type="submit" className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-4 rounded-2xl transition shadow-lg shadow-emerald-900/50 mt-6 text-lg tracking-wide transform active:scale-95 duration-200">
                       Solicitar Estudio Gratuito
                     </button>
-                    <p className="text-xs text-slate-500 mt-6 text-center">Tus datos serán enviados a info@integraverde.com para su gestión.</p>
+                    <p className="text-xs text-slate-500 mt-6 text-center">Tus datos serán enviados a: contacto@integraverde.com para su gestión.</p>
                   </form>
                 )}
               </div>
@@ -1158,9 +1158,9 @@
               {/* Footer */}
               <footer className="glass-panel border-t border-white/40 pt-16 pb-8 mt-auto bg-white/40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
                     {/* Brand Column */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 lg:col-span-1">
                       <a href="https://www.integraverde.com/" target="_blank" rel="noopener noreferrer">
                         <img 
                           src="https://raw.githubusercontent.com/wespeakagency/Integra-Verde/main/integra_verde_logo_transparente.png" 
@@ -1174,7 +1174,7 @@
                     </div>
 
                     {/* Quick Links */}
-                    <div>
+                    <div className="lg:col-span-1">
                       <h4 className="font-bold text-slate-900 mb-6 text-lg">Enlaces Rápidos</h4>
                       <ul className="space-y-3">
                         <li>
@@ -1205,41 +1205,69 @@
                     </div>
 
                     {/* Contact Info */}
-                    <div>
-                      <h4 className="font-bold text-slate-900 mb-6 text-lg">Contacto</h4>
-                      <ul className="space-y-4">
-                        <li className="flex items-start gap-3">
-                          <div className="p-2 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
-                            <IconMail className="w-4 h-4 text-emerald-700" />
-                          </div>
-                          <div>
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-0.5">Correo</span>
-                            <a href="mailto:info@integraverde.com" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium">info@integraverde.com</a>
-                          </div>
-                        </li>
-                        <li className="flex items-start gap-3">
-                          <div className="p-2 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
-                            <IconPhone className="w-4 h-4 text-emerald-700" />
-                          </div>
-                          <div>
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-0.5">Teléfono</span>
-                            <a href="tel:+525512345678" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium">+52 55 1234 5678</a>
-                          </div>
-                        </li>
-                         <li className="flex items-start gap-3">
-                          <div className="p-2 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
-                            <IconMapPin className="w-4 h-4 text-emerald-700" />
-                          </div>
-                          <div>
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-0.5">Ubicación</span>
-                            <span className="text-slate-700 text-sm font-medium">México</span>
-                          </div>
-                        </li>
-                      </ul>
+                    <div className="lg:col-span-2">
+                      <h4 className="font-bold text-slate-900 mb-6 text-lg">Contáctanos</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        {/* CDMX */}
+                        <div>
+                          <h5 className="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wide">CDMX, Zona Metropolitana & Cuernavaca</h5>
+                          <ul className="space-y-4">
+                            <li className="flex items-start gap-3">
+                              <div className="p-1.5 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
+                                <IconPhone className="w-3.5 h-3.5 text-emerald-700" />
+                              </div>
+                              <div className="flex flex-col">
+                                <a href="tel:+525526555508" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium">Tel: (55) 2655-5508</a>
+                                <a href="https://wa.me/525526555508" target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium">Whats: (55) 2655-5508</a>
+                              </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                              <div className="p-1.5 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
+                                <IconMail className="w-3.5 h-3.5 text-emerald-700" />
+                              </div>
+                              <a href="mailto:contacto@integraverde.com" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium break-all">contacto@integraverde.com</a>
+                            </li>
+                            <li className="flex items-start gap-3">
+                              <div className="p-1.5 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
+                                <IconMapPin className="w-3.5 h-3.5 text-emerald-700" />
+                              </div>
+                              <span className="text-slate-600 text-sm leading-relaxed">Nicolás Bravo 79, Lomas del Huizachal, Naucalpan de Juárez, Estado de México. 53840</span>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Cancún */}
+                        <div>
+                          <h5 className="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wide">Cancún</h5>
+                          <ul className="space-y-4">
+                            <li className="flex items-start gap-3">
+                              <div className="p-1.5 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
+                                <IconPhone className="w-3.5 h-3.5 text-emerald-700" />
+                              </div>
+                              <div className="flex flex-col">
+                                <a href="tel:+529983028899" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium">Tel: (998) 302 8899</a>
+                                <a href="https://wa.me/529983028899" target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium">Whats: (998) 302 8899</a>
+                              </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                              <div className="p-1.5 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
+                                <IconMail className="w-3.5 h-3.5 text-emerald-700" />
+                              </div>
+                              <a href="mailto:contacto@integraverde.com" className="text-slate-700 hover:text-emerald-600 transition text-sm font-medium break-all">contacto@integraverde.com</a>
+                            </li>
+                            <li className="flex items-start gap-3">
+                              <div className="p-1.5 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
+                                <IconMapPin className="w-3.5 h-3.5 text-emerald-700" />
+                              </div>
+                              <span className="text-slate-600 text-sm leading-relaxed">Avenida Bonampak, Manzana 1, Lote 4C-2, Piso 13, Local 1311, Supermanzana 4A, Benito Juárez, Cancún, Quintana Roo, 77500</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Socials */}
-                    <div>
+                    <div className="lg:col-span-1">
                       <h4 className="font-bold text-slate-900 mb-6 text-lg">Síguenos</h4>
                       <div className="flex gap-4">
                         <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-white/60 hover:bg-white hover:scale-110 hover:text-emerald-600 transition rounded-xl flex items-center justify-center shadow-sm border border-slate-100 text-slate-500">
