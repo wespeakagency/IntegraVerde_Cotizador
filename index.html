@@ -436,11 +436,20 @@
 
           const handleSubmit = (e) => {
              e.preventDefault();
-             // Simulation of submission
-             console.log("Form data to send to contacto@integraverde.com:", formState);
-             setTimeout(() => {
-                setSubmitted(true);
-             }, 800);
+             
+             const email = "contacto@integraverde.com";
+             const subject = encodeURIComponent("Nueva solicitud de cotización - Integra Verde");
+             const body = encodeURIComponent(
+               `Nombre: ${formState.name}\n` +
+               `Correo: ${formState.email}\n` +
+               `Teléfono: ${formState.phone}\n` +
+               `Servicio: ${formState.service}\n\n` +
+               `Mensaje:\n${formState.message || "Sin mensaje adicional"}`
+             );
+
+             window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+             
+             setSubmitted(true);
           };
 
           return (
