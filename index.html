@@ -294,15 +294,14 @@
                 <div
                   id="sunwise-quote-root"
                   data-integration="sunwise"
-                  className="min-h-[480px] md:min-h-[560px] glass-panel rounded-[2.5rem] border border-emerald-200/70 bg-white/55 flex items-center justify-center px-6 py-16 shadow-xl"
+                  className="min-h-[480px] md:min-h-[560px] glass-panel rounded-[2.5rem] border border-emerald-200/70 bg-white/55 overflow-hidden shadow-xl"
                 >
-                  <div className="max-w-lg text-center" role="status" aria-live="polite">
-                    <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700">
-                      <IconFileText className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Cotizador en preparación</h3>
-                    <p className="mt-4 text-lg text-slate-600">Muy pronto podrás iniciar tu cotización aquí</p>
-                  </div>
+                  <iframe
+                    src="./sunwise-embed.html"
+                    title="Cotizador Sunwise"
+                    className="w-full min-h-[900px] md:min-h-[780px] border-0 block bg-transparent"
+                    loading="lazy"
+                  />
                 </div>
                 {/* END SUNWISE EMBED */}
               </div>
